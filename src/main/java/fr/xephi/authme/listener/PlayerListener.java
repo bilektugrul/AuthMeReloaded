@@ -1,5 +1,9 @@
 package fr.xephi.authme.listener;
 
+import com.mifmif.common.regex.Generex;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.api.v3.AuthMeApi;
 import fr.xephi.authme.data.QuickCommandsProtectionManager;
 import fr.xephi.authme.data.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -8,6 +12,8 @@ import fr.xephi.authme.message.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.register.executors.ApiPasswordRegisterParams;
+import fr.xephi.authme.process.register.executors.RegistrationMethod;
 import fr.xephi.authme.service.AntiBotService;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.JoinMessageService;
@@ -18,6 +24,7 @@ import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -50,6 +57,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.InventoryView;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import javax.inject.Inject;
 import java.util.Locale;
@@ -65,6 +73,8 @@ public class PlayerListener implements Listener {
 
     @Inject
     private Settings settings;
+    @Inject
+    private DataSource database;
     @Inject
     private Messages messages;
     @Inject
@@ -91,6 +101,10 @@ public class PlayerListener implements Listener {
     private PermissionsManager permissionsManager;
     @Inject
     private QuickCommandsProtectionManager quickCommandsProtectionManager;
+    @Inject
+    private ConsoleLogger logger;
+
+    private final Generex generex = new Generex("[A-Za-z0-9]{10}");
 
     // Lowest priority to apply fast protection checks
     @EventHandler(priority = EventPriority.LOWEST)
@@ -179,6 +193,18 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
+        FloodgatePlayer floodgatePlayer = Utils.getBedrockPlayer(player.getUniqueId());
+        if (floodgatePlayer != null) {
+            if (!database.isAuthAvailable(player.getName())) {
+                logger.info("Force registering floodgate user " + player.getName());
+                AuthMeApi.getInstance().forceRegister(player, generex.random(), true);
+            } else {
+                logger.info("Force joining floodgate user " + player.getName());
+                management.forceLogin(player);
+            }
+            return;
+        }
 
         if (!PlayerListener19Spigot.isPlayerSpawnLocationEventCalled()) {
             teleportationService.teleportOnJoin(player);

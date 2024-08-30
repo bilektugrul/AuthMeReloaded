@@ -320,7 +320,6 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
                 <executions>
-                    <!-- Disable, we aren't using shading atm
                     <execution>
                         <id>shaded-jar</id>
                         <phase>package</phase>
@@ -328,7 +327,6 @@
                             <goal>shade</goal>
                         </goals>
                     </execution>
-                    -->
                 </executions>
                 <configuration>
                     <!-- Don't create the reduced pom file, as we don't deploy the shaded jar -->
@@ -503,6 +501,10 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>opencollab-snapshot</id>
+            <url>https://repo.opencollab.dev/main/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -538,6 +540,27 @@
             <artifactId>javatar</artifactId>
             <version>${dependencies.javatar.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geysermc.geyser</groupId>
+            <artifactId>api</artifactId>
+            <version>2.4.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geysermc.floodgate</groupId>
+            <artifactId>api</artifactId>
+            <version>2.2.3-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.mifmif</groupId>
+            <artifactId>generex</artifactId>
+            <version>1.0.2</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Java Email Library -->

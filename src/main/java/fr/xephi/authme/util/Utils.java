@@ -5,8 +5,13 @@ import fr.xephi.authme.output.ConsoleLoggerFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.geysermc.api.Geyser;
+import org.geysermc.api.GeyserApiBase;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -107,4 +112,27 @@ public final class Utils {
     public static boolean isEmailEmpty(String email) {
         return StringUtils.isBlank(email) || "your@email.com".equalsIgnoreCase(email);
     }
+
+    public static FloodgatePlayer getBedrockPlayer(String prefixedUsername) {
+        for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+            if (floodgatePlayer.getCorrectUsername().equals(prefixedUsername)) {
+                return floodgatePlayer;
+            }
+        }
+
+        return null;
+    }
+
+    public static FloodgatePlayer getBedrockPlayer(UUID uuid) {
+        return FloodgateApi.getInstance().getPlayer(uuid);
+    }
+
+    public static boolean isBedrockPlayer(UUID uuid) {
+        return getBedrockPlayer(uuid) != null;
+    }
+
+    public static boolean isBedrockConnection(String username) {
+        return getBedrockPlayer(username) != null;
+    }
+
 }

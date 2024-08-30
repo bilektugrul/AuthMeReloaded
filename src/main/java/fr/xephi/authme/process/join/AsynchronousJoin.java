@@ -24,9 +24,11 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.InternetProtocolUtils;
 import fr.xephi.authme.util.PlayerUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 import javax.inject.Inject;
 import java.util.Locale;
